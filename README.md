@@ -13,6 +13,7 @@ pip install -r requirements.txt
 
 ```sh
 python manage.py migrate
+python manage.py loaddata fixtures.json
 python manage.py runserver
 ```
 
