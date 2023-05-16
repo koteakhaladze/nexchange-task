@@ -1,3 +1,4 @@
+from datetime import timedelta, datetime
 from rest_framework import generics
 from rest_framework.response import Response
 from django.db.models import Avg, Q
@@ -32,17 +33,18 @@ class OrderTimeList(generics.ListAPIView):
                     raise serializers.ValidationError("quote does not exist")
                 filter_expr &= Q(order__pair=pair)
             if quote:
-                quote = Currency.objects.filter(name=quote).first()
+                quote = Currency.objects.filter(code=quote).first()
                 if not quote:
                     raise serializers.ValidationError("quote does not exist")
                 filter_expr &= Q(order__quote=quote)
             if base:
-                base = Currency.objects.filter(name=base).first()
+                base = Currency.objects.filter(code=base).first()
                 if not base:
                     raise serializers.ValidationError("base does not exist")
                 filter_expr &= Q(order__base=base)
-            if date_from:
-                filter_expr &= Q(order__created_on__gte=date_from)
+            if not date_from:
+                date_from = datetime.now() - timedelta(days=30)
+            filter_expr &= Q(order__created_on__gte=date_from)
             if date_to:
                 filter_expr &= Q(order__created_on__lte=date_to)
         avg = OrderProcessingTime.objects.filter(filter_expr).aggregate(Avg('minutes'))['minutes__avg']

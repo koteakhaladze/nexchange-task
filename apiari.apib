@@ -1,0 +1,1629 @@
+FORMAT: 1A
+HOST: https://api.n.exchange/
+# n.exchange
+
+<a href="https://n.exchange" class="navbar-left"><img src="https://n.exchange/images/logo/logo-white.svg"></a>
+
+API for crypto currency exchange.
+
+## Get Currencies [/en/api/v1/currency/]
+
+
+### Get Currencies [GET]
+ Get all supported currencies.
+
++ Response 200 (application/json)
+    + Attributes (array[Currency])
+    + Body
+
+            [
+              {
+                "code": "BTC",
+                "name": "bitcoin",
+                "min_confirmations": 1,
+                "is_crypto": true,
+                "minimal_amount": "0.01000000",
+                "is_base_of_enabled_pair": true,
+                "is_quote_of_enabled_pair": true,
+                "has_enabled_pairs": true,
+                "withdrawal_fee": "0.00250000"
+              },
+              {
+                "code": "LTC",
+                "name": "litecoin",
+                "min_confirmations": 6,
+                "is_crypto": true,
+                "minimal_amount": "0.50000000",
+                "is_base_of_enabled_pair": true,
+                "is_quote_of_enabled_pair": true,
+                "has_enabled_pairs": true,
+                "withdrawal_fee": "0.00010000"
+              }
+            ]
+
+## Get Pairs [/en/api/v1/pair/]
+
+
+### Get Pairs [GET]
+ Get all supported currency pairs.
+
++ Response 200 (application/json)
+    + Attributes (array[PairSimple])
+    + Body
+
+            [
+              {
+                "name": "BTCLTC",
+                "base": "BTC",
+                "quote": "LTC",
+                "fee_ask": "0.00100000",
+                "fee_bid": "0.00100000"
+              },
+              {
+                "name": "BTCETH",
+                "base": "BTC",
+                "quote": "ETH",
+                "fee_ask": "0.00100000",
+                "fee_bid": "0.00100000"
+              }
+            ]
+
+## Get Price [/en/api/v1/get_price/{pair_name}/{?amount_base,amount_quote}]
+
++ Parameters
+    + `pair_name`: BTCLTC (required, string) - name of exchanged pair i.e. BTCLTC, LTCBTC, ETHBTC.
+    + `amount_base`:  1.06935074 (optional, double) - amount of base currency which user gets.
+    + `amount_quote`: 100 (optional, double) - amount of base currency which user sends.
+
+### Get Price [GET]
+ Get price quote of a given amount of currency, or get how much currency you would get for a given amount of currency
+
++ Response 200 (application/json)
+    + Attributes (PriceBaseQuote)
+    + Body
+
+            {
+              "amount_base": 1.24354147,
+              "amount_quote": 100.0,
+              "timestamp": 1530292405.642548,
+              "price": 80.4154927
+            }
+            {
+              "amount_base": 1.06935074,
+              "amount_quote": 100.0,
+              "timestamp": 1532432055.609627,
+              "price": 93.52884297,
+              "pair": {
+                "base": "BTC",
+                "quote": "LTC"
+              },
+              "max_amount_base": 3.20049466,
+              "max_amount_quote": 300.0,
+              "min_amount_base": 0.001,
+              "min_amount_quote": 0.14019423
+            }
+
+
+## Latest Price [/en/api/v1/price/{pair_name}/latest/{?market_code}]
+
++ Parameters
+    + `pair_name`: BTCLTC (required, string) - name of exchanged pair i.e. BTCLTC, LTCBTC, ETHBTC.
+    + `market_code`: nex (optional, string) - price market code. Default market is n.exchange(nex) - prices of this market are used for calculations of orders amounts.
+
+
+### Get Latest Price [GET]
+ Gets latest price of the pair.
+
++ Response 200 (application/json)
+    + Attributes (array[Price])
+    + Body
+
+            [
+              {
+                "created_on":"2017-08-15T12:45:01.443265Z",
+                "unix_time":"1502801101",
+                "ticker":{
+                  "ask":"97.06196063",
+                  "bid":"96.33558341"
+                },
+                "market": {
+                    "name": "n.exchange",
+                    "code": "nex"
+                }
+              }
+            ]
+
+
+## Price History [/en/api/v1/price/{pair_name}/history/{?hours,data_points,market_code}]
+
++ Parameters
+    + `pair_name`: BTCLTC (required, string) - name of exchanged pair i.e. BTCLTC, LTCBTC, ETHBTC.
+    + `hours`: 0.1 (optional, double) - how many hours back would you like to get prices for. Amount of hours to check i.e. 0.3 means 18 min, 2 - 2 hours.
+    + `data_points`: 3 (optional, int) - how many data points in the selected hour range would you like to get. For example, If you pass 1 hour and data\_points=60, you will get 1 data point per minute (our max supported resolution), if you pass hour=1 and data\_points=30 you will get one point per 2 minutes.
+    + `market_code`: nex (optional, string) - price market code. Default market is n.exchange(nex) - prices of this market are used for calculations of orders amounts.
+
+### Get Price History [GET]
+ Returns price history for selected pair.
+
++ Response 200 (application/json)
+    + Attributes (array[Price])
+    + Body
+
+            [
+              {
+                "created_on": "2017-08-15T13:37:05.746301Z",
+                "unix_time": "1502804225",
+                "ticker": {
+                  "ask": "93.50770668",
+                  "bid": "93.01675978"
+                },
+                "market": {
+                    "name": "n.exchange",
+                    "code": "nex"
+                }
+              },
+              {
+                "created_on": "2017-08-15T13:38:05.877523Z",
+                "unix_time": "1502804285",
+                "ticker": {
+                  "ask": "92.71952575",
+                  "bid": "91.87051683"
+                },
+                "market": {
+                    "name": "n.exchange",
+                    "code": "nex"
+                }
+              }
+            ]
+
+## Prices Info List [/en/api/v1/info/bulk/]
+
+### Prices Info List [GET]
+   Returns list of rates with minimal and maximal amounts.
+
++ Response 200 (application/json)
+    + Attributes (array[PairPriceInfo])
+    + Body
+            [
+              {
+                  "pair": "XVGUSD",
+                  "rate_id": "PWKQ1KG",
+                  "from": "USD",
+                  "to": "XVG",
+                  "rate": "0.00597474",
+                  "withdrawal_fee": "1.00",
+                  "max_amount": "30000.0",
+                  "min_amount": "1170.599099"
+                  "max_receive_amount": "30000.0",
+                  "min_receive_amount": "1170.599099",
+                  "max_deposit_amount": "5000",
+                  "min_deposit_amount": "50",
+
+              },
+              {
+                  "pair": "XVGRUB",
+                  "rate_id": "PVIGMHD",
+                  "from": "RUB",
+                  "to": "XVG",
+                  "rate": "0.45941279",
+                  "withdrawal_fee": "1.00",
+                  "max_amount": "30000.0",
+                  "min_amount": "1020.570418"
+                  "max_receive_amount": "30000.0",
+                  "min_receive_amount": "1020.570418",
+                  "max_deposit_amount": "7000000",
+                  "min_deposit_amount": "5000",
+              },
+              {
+                  "pair": "BTCUSD",
+                  "rate_id": "PH7KAQ3",
+                  "from": "USD",
+                  "to": "BTC",
+                  "rate": "9636.68",
+                  "withdrawal_fee": "0.0002",
+                  "max_amount": "0.9748937",
+                  "min_amount": "0.001"
+                  "max_receive_amount": "0.9748937",
+                  "min_receive_amount": "0.001"
+                  "max_deposit_amount": "5000",
+                  "min_deposit_amount": "50",
+              }
+            ]
+
+## Get Orders [/en/api/v1/orders/{?page,page_size,pair,status}]
+
++ Parameters
+    + `page`: 1 (optional, int) - page number.
+    + `page_size`: 3 (optional, int) - number of orders in one page.
+    + `pair`: BTCETH (optional) - pair name.
+    + `status`: 11 (optional, int) - order status. CANCELED-0, INITIAL-11, PAID_UNCONFIRMED-12, PAID-13, PRE_RELEASE-14, RELEASED-15, COMPLETED-16, REFUNDED-8
+
+
+### Get Orders [GET]
+   Returns orders.
+
++ Response 200 (application/json)
+    + Attributes (Orders)
+    + Body
+
+            {
+              "count": 21,
+              "next": "http://localhost:8000/en/api/v1/orders/?page=2&page_size=3",
+              "previous": null,
+              "results": [
+                {
+                  "amount_base": "0.50000000",
+                  "is_default_rule": false,
+                  "unique_reference": "LOUA3",
+                  "amount_quote": "7.17000000",
+                  "pair": 2,
+                  "withdraw_address": {
+                    "type": "W",
+                    "name": "",
+                    "address": "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2",
+                    "currency_code": "BTC"
+                  },
+                  "created_on": "2017-08-16T07:27:04.964665Z",
+                  "from_default_rule": false,
+                  "order_type": 1,
+                  "deposit_address": {
+                    "type": "D",
+                    "name": "",
+                    "address": "0xF00667496B353d77492e0f7167843d5d5802030b",
+                    "currency_code": "ETH"
+                  },
+                  "pair_name": "BTCETH",
+                  "withdrawal_fee": "0.0025",
+                  "withdrawal_fee_quote": "0.03585",
+                  "user_provided_amount": "0"
+                },
+                {
+                  "amount_base": "0.50000000",
+                  "is_default_rule": false,
+                  "unique_reference": "OMTE7",
+                  "amount_quote": "7.17000000",
+                  "pair": 2,
+                  "withdraw_address": null,
+                  "created_on": "2017-08-16T07:27:01.099226Z",
+                  "from_default_rule": false,
+                  "order_type": 1,
+                  "deposit_address": {
+                    "type": "D",
+                    "name": "",
+                    "address": "0x7b92910B52DAE980702d4EDc270B031b60359904",
+                    "currency_code": "ETH"
+                  },
+                  "pair_name": "BTCETH"
+                },
+                {
+                  "amount_base": "0.50000000",
+                  "is_default_rule": false,
+                  "unique_reference": "57KJB",
+                  "amount_quote": "7.17000000",
+                  "pair": 2,
+                  "withdraw_address": null,
+                  "created_on": "2017-08-16T07:26:57.076292Z",
+                  "from_default_rule": false,
+                  "order_type": 1,
+                  "deposit_address": {
+                    "type": "D",
+                    "name": "",
+                    "address": "0x408a05c9F62E8eaECd258BB27213ee6e59d2E7Ef",
+                    "currency_code": "ETH"
+                  },
+                  "pair_name": "BTCETH",
+                  "withdrawal_fee": "0.0025",
+                  "withdrawal_fee_quote": "0.03585",
+                  "user_provided_amount": "0"
+                }
+              ]
+            }
+
+## Get Order [/en/api/v1/orders/{unique_reference}/]
+
++ Parameters
+    + `unique_reference`: V08PD (required, string) - unique reference of the order.
+
+
+### Get Order [GET]
+   Get order data.
+
++ Request
+
+    + Attributes
+        + Headers (OAuth2Headers)
+    + Headers
+
+            Authorization: Bearer 3HrghbVeDUQWaOriqrXYLZmCb4cEXB
+
+
++ Response 200 (application/json)
+    + Attributes (DetailedOrder)
+
+    + Body
+
+            {
+              "amount_base":"0.50000000",
+              "is_default_rule":false,
+              "unique_reference":"1CPL5",
+              "amount_quote":"48.00000000",
+              "pair":1,"withdraw_address":null,
+              "created_on":"2017-08-16T10:36:02.248639Z",
+              "from_default_rule":false,"order_type":1,
+              "deposit_address":{
+                "type":"D",
+                "name":"",
+                "address":"LewxThDasEA2JTDVDdGMot92kG6XYNFNQN",
+                "currency_code":"LTC"
+              },
+              "pair_name":"BTCLTC",
+              "withdrawal_fee": "0.0025",
+              "withdrawal_fee_quote": "0.03585",
+              "user_provided_amount": "0"
+            }
+
+
+## Get User Orders [/en/api/v1/users/me/orders/{?page,page_size}]
+
++ Parameters
+    + `page`: 1 (optional, int) - page number.
+    + `page_size`: 3 (optional, int) - number of orders in one page.
+
+
+### Get User Orders [GET]
+   Get user orders.
+
++ Request
+
+    + Attributes
+        + Headers (OAuth2Headers)
+    + Headers
+
+            Authorization: Bearer 3HrghbVeDUQWaOriqrXYLZmCb4cEXB
+
+
++ Response 200 (application/json)
+    + Attributes (Orders)
+
+    + Body
+
+            {
+              "count": 1,
+              "next": {},
+              "previous": {},
+              "results": [
+                {
+                  "amount_base": "0.50000000",
+                  "is_default_rule": false,
+                  "unique_reference": "1CPL5",
+                  "amount_quote": "48.00000000",
+                  "pair": 1,
+                  "withdrawal_fee": "0.0025",
+                  "withdrawal_fee_quote": "0.03585",
+                  "user_provided_amount": "0",
+                  "withdraw_address": {},
+                  "created_on": "2017-08-16T10:36:02.248639Z",
+                  "from_default_rule": false,
+                  "order_type": 1,
+                  "deposit_address": {
+                    "type": "D",
+                    "name": "",
+                    "address": "LewxThDasEA2JTDVDdGMot92kG6XYNFNQN",
+                    "currency_code": "LTC"
+                  },
+                  "status": 1,
+                  "payment_window": 60,
+                  "payment_deadline": "2017-08-16T11:36:02.248639Z"
+                  "status_name":[
+                    [
+                      1,
+                      "INITIAL"
+                    ]
+                  ],
+                  "transactions":[{
+                    "created_on":"2017-08-16T22:14:46.680082Z",
+                    "modified_on":"2017-08-16T22:14:46.680105Z",
+                    "type":"W",
+                    "address_to":1,
+                    "tx_id":"asdfsadfsadf",
+                    "confirmations":0,
+                    "amount":"0.01000000",
+                    "is_verified":false,
+                    "is_completed":false,
+                    "time":null,
+                    "currency":null
+                  }]
+                }
+              ]
+            }
+
+
+## User Order [/en/api/v1/users/me/orders/{unique_reference}/]
+
++ Parameters
+    + `unique_reference`: V08PD (required, string) - unique reference of the order.
+
+
+### Get User Order [GET]
+   Get user order.
+
++ Request
+
+    + Attributes
+        + Headers (OAuth2Headers)
+    + Headers
+
+            Authorization: Bearer 3HrghbVeDUQWaOriqrXYLZmCb4cEXB
+
+
++ Response 200 (application/json)
+    + Attributes (PrivateOrder)
+
+    + Body
+
+            {
+              "amount_base": "0.50000000",
+              "is_default_rule": false,
+              "unique_reference": "1CPL5",
+              "amount_quote": "48.00000000",
+              "pair": 1,
+              "withdrawal_fee": "0.0025",
+              "withdrawal_fee_quote": "0.03585",
+              "user_provided_amount": "0",
+              "withdraw_address": {},
+              "created_on": "2017-08-16T10:36:02.248639Z",
+              "from_default_rule": false,
+              "order_type": 1,
+              "deposit_address": {
+                "type": "D",
+                "name": "",
+                "address": "LewxThDasEA2JTDVDdGMot92kG6XYNFNQN",
+                "currency_code": "LTC"
+              },
+              "status": 1,
+              "payment_window": 60,
+              "payment_deadline": "2017-08-16T11:36:02.248639Z"
+              "status_name":[
+                [
+                  1,
+                  "INITIAL"
+                ]
+              ],
+              "transactions":[{
+                "created_on":"2017-08-16T22:14:46.680082Z",
+                "modified_on":"2017-08-16T22:14:46.680105Z",
+                "type":"W",
+                "address_to":1,
+                "tx_id":"asdfsadfsadf",
+                "confirmations":0,
+                "amount":"0.01000000",
+                "is_verified":false,
+                "is_completed":false,
+                "time":null,
+                "currency":null
+              }]
+            }
+
+### Update User Order [PUT]
+   Update user order.
+
+
+
+
++ Request (application/json)
+
+    + Attributes
+        + Headers (OAuth2Headers)
+    + Headers
+
+            Authorization: Bearer 3HrghbVeDUQWaOriqrXYLZmCb4cEXB
+            Payload: (UpdateOrderPayload)
+    + Body
+
+            {
+              "refund_address": {
+                "address": "LUZ7mJZ8PheQVLcKF5GhitGuzZcgPWDPA4"
+              }
+            }
+
+
++ Response 200 (application/json)
+    + Attributes (UpdateOrderResponse)
+
+    + Body
+
+            {
+              "refund_address": {
+                "type": "W",
+                "name": "",
+                "address": "LUZ7mJZ8PheQVLcKF5GhitGuzZcgPWDPA4",
+                "currency_code": "LTC"
+              }
+            }
+
+
++ Request (application/json)
+
+    + Attributes
+        + Headers (OAuth2Headers)
+    + Headers
+
+            Authorization: Bearer 3HrghbVeDUQWaOriqrXYLZmCb4cEXB
+            Payload: (UpdateOrderPayload)
+    + Body
+
+            {
+              "refund_address": {
+                "address": "LUZ7mJZ8PheQVLcKF5GhitGuzZcgPWDPA4"
+              }
+            }
+
+
++ Response 400 (application/json)
+    + Body
+
+            {
+              "non_field_errors": [
+                "Order V08PD already has refund address"
+              ]
+            }
+
++ Request (application/json)
+
+    + Attributes
+        + Headers (OAuth2Headers)
+    + Headers
+
+            Authorization: Bearer 3HrghbVeDUQWaOriqrXYLZmCb4cEXB
+            Payload: (UpdateOrderPayload)
+    + Body
+
+            {
+              "refund_address": {
+                "address": "wrong_address"
+              }
+            }
+
+
++ Response 400 (application/json)
+    + Body
+
+            {
+              "non_field_errors": [
+                "wrong_address has invalid characters for a valid Litecoin address"
+              ]
+            }
+
++ Request (application/json)
+
+    + Attributes
+        + Headers (OAuth2Headers)
+    + Headers
+
+            Authorization: Bearer 3HrghbVeDUQWaOriqrXYLZmCb4cEXB_ANOTHER_USER
+            Payload: (UpdateOrderPayload)
+    + Body
+
+            {
+              "refund_address": {
+                "address": "LUZ7mJZ8PheQVLcKF5GhitGuzZcgPWDPA4"
+              }
+            }
+
+
++ Response 403 (application/json)
+    + Body
+
+            {
+              "detail": "You do not have permission to perform this action."
+            }
+
+
+## Create User Order [/en/api/v1/users/me/orders/]
+
+
+### Create User Order [POST]
+   Create order.
+
++ Request (application/json)
+
+    + Attributes
+        + Payload (RequestOrderPayload)
+        + Headers (OAuth2JsonHeaders)
+    + Body
+
+            {
+                "amount_base": 3,
+                "is_default_rule": false,
+                "pair": {
+                  "name": "LTCBTC"
+                },
+                "withdraw_address": {
+                    "address": "LYUoUn9ATCxvkbtHseBJyVZMkLonx7agXA"
+                }
+            }
+    + Headers
+
+            Authorization: Bearer 3HrghbVeDUQWaOriqrXYLZmCb4cEXB
+
++ Response 201 (application/json)
+    + Attributes (MinimalOrder)
+
+    + Body
+
+            {
+              "amount_base": "3.00000000",
+              "is_default_rule": false,
+              "unique_reference": "L18XD",
+              "amount_quote": "0.03110000",
+              "withdrawal_fee": "0.0025",
+              "withdrawal_fee_quote": "0.03585",
+              "user_provided_amount": "0",
+              "pair": {
+                  "name": "LTCBTC"
+                },
+              "withdraw_address": {
+                "type": "W",
+                "name": "",
+                "address": "LYUoUn9ATCxvkbtHseBJyVZMkLonx7agXA",
+                "currency_code": "LTC"
+              },
+              "status_name":[
+                [
+                  1,
+                  "INITIAL"
+                ]
+              ],
+              "transactions":[{
+                "created_on":"2017-08-16T22:14:46.680082Z",
+                "modified_on":"2017-08-16T22:14:46.680105Z",
+                "type":"W",
+                "address_to":1,
+                "tx_id":"asdfsadfsadf",
+                "confirmations":0,
+                "amount":"0.01000000",
+                "is_verified":false,
+                "is_completed":false,
+                "time":null,
+                "currency":null
+              }]
+            }
+
+## Create support inquiry [/en/api/v1/support/]
+
+
+### Create support inquiry [POST]
+
++ Request (application/json)
+
+    + Attributes
+        + Payload (SupportPayload)
+        + Headers (JsonHeaders)
+    + Body
+
+            {
+              "name": "TestSupport",
+              "telephone": "123 000 00 00",
+              "email": "johndoe@domain.com",
+              "subject": "Test case",
+              "message": "this is only a test"
+            }
+
++ Response 201 (application/json)
+    + Attributes (MinimalSupport)
+    + Body
+
+            {
+            'unique_reference': 'SIATEV',
+            'created_on': '2018-02-22T07:48:30.718051Z',
+            'modified_on': '2018-02-22T07:48:30.719539Z',
+            'order': None,
+            'name': 'TestSupport',
+            'email': 'johndoe@domain.com',
+            'telephone': '123 000 00 00',
+            'subject': 'Test case',
+            'message': 'this is only a test',
+            'is_resolved': False
+            }
+
+## Create Anonymous Order [/en/api/v1/orders/]
+
+
+### Create Anonymous Order [POST]
+   Create order.
+
++ Request (application/json)
+
+    + Attributes
+        + Payload (RequestOrderPayload)
+        + Headers (JsonHeaders)
+    + Body
+
+            {
+                "amount_base": 3,
+                "is_default_rule": false,
+                "pair": {
+                  "name": "BTCLTC"
+                },
+                "withdraw_address": {
+                    "address": "17dBqMpMr6r8ju7BoBdeZiSD3cjVZG62yJ"
+                }
+            }
+
++ Response 201 (application/json)
+    + Attributes (MinimalOrder)
+
+    + Body
+
+            {
+              "amount_base": "3.00000000",
+              "is_default_rule": false,
+              "unique_reference": "OTVVXE",
+              "amount_quote": "251.89000000",
+              "pair": {
+                "name": "BTCLTC",
+                "base": {
+                  "code": "BTC",
+                  "name": "bitcoin",
+                  "min_confirmations": 2,
+                  "is_crypto": true,
+                  "minimal_amount": "0.00200000",
+                  "is_base_of_enabled_pair": true,
+                  "is_quote_of_enabled_pair": true,
+                  "has_enabled_pairs": true
+                },
+                "quote": {
+                  "code": "LTC",
+                  "name": "litecoin",
+                  "min_confirmations": 6,
+                  "is_crypto": true,
+                  "minimal_amount": "0.25000000",
+                  "is_base_of_enabled_pair": true,
+                  "is_quote_of_enabled_pair": true,
+                  "has_enabled_pairs": true
+                },
+                "withdrawal_fee": "0.0025",
+                "withdrawal_fee_quote": "0.03585",
+                "user_provided_amount": "0",
+                "fee_ask": 0.001,
+                "fee_bid": 0.001
+              },
+              "withdraw_address": {
+                "type": "W",
+                "name": "",
+                "address": "17dBqMpMr6r8ju7BoBdeZiSD3cjVZG62yJ",
+                "currency_code": "BTC"
+              },
+              "deposit_address": {
+                "type": "D",
+                "name": "",
+                "address": "addr_addr_id_5005841120",
+                "currency_code": "LTC"
+              },
+              "created_on": "2017-09-19T09:20:11.491815Z",
+              "from_default_rule": false,
+              "payment_window": 15,
+              "payment_deadline": "2017-09-19T09:35:11.491815Z",
+              "status_name": [
+                [
+                  11,
+                  "INITIAL"
+                ]
+              ],
+              "transactions": [],
+              "referral_code": [
+                {
+                  "code": "RKXXJET29PG",
+                  "created_on": "2017-09-19T09:20:11.448359Z",
+                  "modified_on": "2017-09-19T09:20:11.448420Z"
+                }
+              ]
+            }
+
+
++ Request (application/json)
+
+    + Attributes
+        + Payload (RequestOrderPayload)
+        + Headers (JsonHeaders)
+    + Body
+
+            {
+                "amount_quote": 12000,
+                "is_default_rule": false,
+                "pair": {
+                  "name": "ETHDOGE"
+                },
+                "withdraw_address": {
+                    "address": "0xf0c6902F5B929716c35603f9765808DE08475BF8"
+                }
+            }
+
++ Response 201 (application/json)
+    + Attributes (MinimalOrder)
+
+
++ Request (application/json)
+
+    + Attributes
+        + Payload (RequestOrderPayload)
+        + Headers (JsonHeaders)
+    + Body
+
+            {
+                "amount_base": 11000,
+                "is_default_rule": false,
+                "pair": {
+                  "name": "DOGEBTC"
+                },
+                "withdraw_address": {
+                    "address": "DGWesaJ1PtZU8BiXYMSomyYQbvN2LLfnx2"
+                }
+            }
+
++ Response 201 (application/json)
+    + Attributes (MinimalOrder)
+
+
++ Request (application/json)
+
+    + Attributes
+        + Payload (RequestOrderPayload)
+        + Headers (JsonHeaders)
+    + Body
+
+            {
+                "amount_base": 3,
+                "is_default_rule": false,
+                "pair": {
+                  "name": "LTCBTC"
+                },
+                "withdraw_address": {
+                    "address": "LYUoUn9ATCxvkbtHseBJyVZMkLonx7agXA"
+                }
+            }
+
++ Response 201 (application/json)
+    + Attributes (MinimalOrder)
+
+
++ Request (application/json)
+
+    + Attributes
+        + Payload (RequestOrderPayload)
+        + Headers (JsonHeaders)
+    + Body
+
+            {
+                "amount_base": 11000,
+                "is_default_rule": false,
+                "pair": {
+                  "name": "XVGBTC"
+                },
+                "withdraw_address": {
+                    "address": "DR14c9j2ZdiUxqdas5xGYcgfiU1GnVF9DJ"
+                }
+            }
+
++ Response 201 (application/json)
+    + Attributes (MinimalOrder)
+
+
++ Request (application/json)
+
+    + Attributes
+        + Payload (RequestOrderPayload)
+        + Headers (JsonHeaders)
+    + Body
+
+            {
+                "amount_base": 1,
+                "is_default_rule": false,
+                "pair": {
+                  "name": "BCHBTC"
+                },
+                "withdraw_address": {
+                    "address": "1GFB4x4Tn4jMgxnKbzWsAUmLfmpz6VNtUW"
+                }
+
+            }
+
++ Response 201 (application/json)
+    + Attributes (MinimalOrder)
+
+## Get Order average processing time [/en/api/v1/orders/processing-time/{?pair, quote, date_from, date_to, base}]
+
++ Request (application/json)
+
+    + Attributes
+        + Headers (OAuth2JsonHeaders)
+    + Headers
+            Authorization: Bearer 3HrghbVeDUQWaOriqrXYLZmCb4cEXB
+
++ Response 200 (application/json)
+    + Body
+      {"avg": 5}
+
+
++ Parameters
+
+    + `date_from`: (optional, string) - start date.
+    + `date_to`: (optional, string) - end date.
+    + `quote`: (optional, string) - quote currency.
+    + `pair`: (optional, string) - pair.
+    + `base`: (optional, string) - base currency.
+
+## Set Order Withdrawal, Refund Address [/en/api/v1/orders/{unique_reference}/]
+
++ Parameters
+    + `unique_reference`: V08PC (required, string) - unique reference of the order.
+
+### Set Order Withdrawal Address and/or Refund Address [PATCH]
+   Set Order Withdrawal Address and/or Refund Address
+
++ Request (application/json)
+
+    + Attributes
+        + Payload (WithdrawRefundAddressSet)
+        + Headers (OAuth2JsonHeaders)
+    + Headers
+            Authorization: Bearer 3HrghbVeDUQWaOriqrXYLZmCb4cEXB
+    + Body
+            {
+                "refund_address": {
+                    "address": "LTCPodtg91HsKf5xB1MQ5L13CkcSfd2rCV"
+                },
+                "withdraw_address": {
+                    "address": "0x050fb827b30ed74c1a62c06b20c7a591d1997173"
+                }
+            }
+
++ Response 200 (application/json)
+    + Attributes (UpdateOrderResponse)
+
+    + Body
+            {
+                "refund_address": {
+                    "type": "W",
+                    "name": "",
+                    "address": "LTCPodtg91HsKf5xB1MQ5L13CkcSfd2rCV",
+                    "currency_code": "LTC"
+                },
+                "withdraw_address": {
+                    "type": "W",
+                    "name": "",
+                    "address": "0x050fb827b30ed74c1a62c06b20c7a591d1997173",
+                    "currency_code": "ETH"
+                },
+                "flagged": false
+            }
+
+
+## Stop Order Processing [/en/api/v1/orders/{unique_reference}/]
+
++ Parameters
+    + `unique_reference`: V08PC (required, string) - unique reference of the order.
+
+### Stop Order Processing [PATCH]
+   Stop Order Processing by Flagging It
+
++ Request (application/json)
+
+    + Attributes
+        + Payload (OrderFlaggedFieldPayload)
+        + Headers (OAuth2JsonHeaders)
+    + Headers
+            Authorization: Bearer 3HrghbVeDUQWaOriqrXYLZmCb4cEXB
+    + Body
+            {
+                "flagged": true
+            }
+
++ Response 200 (application/json)
+    + Attributes (UpdateOrderResponse)
+
+    + Body
+
+            {
+                "refund_address": null,
+                "withdraw_address": null,
+                "flagged": true
+            }
+
+
+## Referrals [/en/api/v1/referrals/]
+
+
+### Get Referrals [GET]
+   Ger referrals.
+
++ Request (aplication/json)
+
+    + Attributes
+        + Headers (OAuth2Headers)
+    + Headers
+
+            Authorization: Bearer 3HrghbVeDUQWaOriqrXYLZmCb4cEXB
+
++ Response 200 (application/json)
+    + Attributes (Referrals)
+
+    + Body
+
+            [
+              {
+                "confirmed_orders_count": 1,
+                "orders": [{"unique_reference": "OTVVXE"}],
+                "turnover": 3.04308297,
+                "revenue": 0.06086166,
+                "referee": {
+                  "profile": {
+                    "partial_phone": "None",
+                    "last_visit_time": "2017-08-25T09:45:55.629455Z",
+                    "id": 11,
+                    "time_zone": "UTC",
+                    "created_on": "2017-08-25T09:45:55.475356Z",
+                    "modified_on": "2017-08-25T09:45:55.475379Z"
+                  }
+                },
+                "code": {
+                  "code": "Vt6v8BiHzW",
+                  "created_on": "2017-08-25T15:30:32.181597Z",
+                  "modified_on": "2017-08-25T15:30:40.620273Z"
+                },
+                "created_on": "2017-08-25T15:36:26.346474Z",
+                "modified_on": "2017-08-25T15:36:26.346496Z"
+              }
+            ]
+
+
+## Ticker - Summarized Volume [/en/api/v1/ticker/{?hours}]
+
++ Parameters
+    + `hours`: 24 (optional, double) - how many hours back would you like to get trade Volume for.
+
+
+### Get Ticker [GET]
+   Get trade Volume.
+
++ Request (aplication/json)
+
++ Response 200 (application/json)
+    + Attributes (TickerVolume)
+
+    + Body
+
+            {
+                "hours": 24.0,
+                "total_volume": {
+                    "volume_btc": 0.53614493,
+                },
+                "tradable_pairs": [
+                    {
+                        "pair": {
+                            "name": "BTCLTC",
+                            "base": {
+                                "code": "BTC",
+                                "name": "bitcoin"
+                            },
+                            "quote": {
+                                "code": "LTC",
+                                "name": "litecoin"
+                            },
+                            "fee_ask": 0.001,
+                            "fee_bid": 0.001
+                        },
+                        "base_volume_btc": 0.5,
+                        "base_volume": 0.5,
+                        "quote_volume": 36.69,
+                        "last_ask": 73.05502846,
+                        "quote_volume_btc": 0.50418824
+                    },
+                    {
+                        "pair": {
+                            "name": "BTCETH",
+                            "base": {
+                                "code": "BTC",
+                                "name": "bitcoin"
+                            },
+                            "quote": {
+                                "code": "ETH",
+                                "name": "ethereum"
+                            },
+                            "fee_ask": 0.001,
+                            "fee_bid": 0.001
+                        },
+                        "base_volume_btc": 0.0,
+                        "base_volume": 0.0,
+                        "quote_volume": 0.0,
+                        "last_ask": 13.86042647,
+                        "quote_volume_btc": 0.0
+                    },
+                    {
+                        "pair": {
+                            "name": "ETHLTC",
+                            "base": {
+                                "code": "ETH",
+                                "name": "ethereum"
+                            },
+                            "quote": {
+                                "code": "LTC",
+                                "name": "litecoin"
+                            },
+                            "fee_ask": 0.001,
+                            "fee_bid": 0.001
+                        },
+                        "base_volume_btc": 0.03614493,
+                        "base_volume": 0.5,
+                        "quote_volume": 2.66,
+                        "last_ask": 5.28626186,
+                        "quote_volume_btc": 0.0365533
+                    }
+                ]
+            }
+
+
+## Trade Volume [/en/api/v1/volume/{?hours}]
+
++ Parameters
+    + `hours`: 24 (optional, double) - how many hours back would you like to get trade Volume for.
+
+
+
+### Get Volume [GET]
+   Get trade Volume.
+
++ Request (aplication/json)
+
++ Response 200 (application/json)
+    + Attributes (Volume)
+
+    + Body
+
+            {
+                "hours": 24.0,
+                "total_volume": {
+                    "base_volume_btc": 0.53614493,
+                    "quote_volume_btc": 0.54074154
+                },
+                "tradable_pairs": [
+                    {
+                        "pair": {
+                            "name": "BTCLTC",
+                            "base": {
+                                "code": "BTC",
+                                "name": "bitcoin"
+                            },
+                            "quote": {
+                                "code": "LTC",
+                                "name": "litecoin"
+                            },
+                            "fee_ask": 0.001,
+                            "fee_bid": 0.001
+                        },
+                        "base_volume_btc": 0.5,
+                        "base_volume": 0.5,
+                        "quote_volume": 36.69,
+                        "last_ask": 73.05502846,
+                        "quote_volume_btc": 0.50418824
+                    },
+                    {
+                        "pair": {
+                            "name": "BTCETH",
+                            "base": {
+                                "code": "BTC",
+                                "name": "bitcoin",
+                            },
+                            "quote": {
+                                "code": "ETH",
+                                "name": "ethereum"
+                            },
+                            "fee_ask": 0.001,
+                            "fee_bid": 0.001
+                        },
+                        "base_volume_btc": 0.0,
+                        "base_volume": 0.0,
+                        "quote_volume": 0.0,
+                        "last_ask": 13.86042647,
+                        "quote_volume_btc": 0.0
+                    },
+                    {
+                        "pair": {
+                            "name": "ETHLTC",
+                            "base": {
+                                "code": "ETH",
+                                "name": "ethereum"
+                            },
+                            "quote": {
+                                "code": "LTC",
+                                "name": "litecoin"
+                            },
+                            "fee_ask": 0.001,
+                            "fee_bid": 0.001
+                        },
+                        "base_volume_btc": 0.03614493,
+                        "base_volume": 0.5,
+                        "quote_volume": 2.66,
+                        "last_ask": 5.28626186,
+                        "quote_volume_btc": 0.0365533
+                    }
+                ]
+            }
+
+
+## Register New User [/en/api/v1/users/]
+
+### Create New User [POST]
+   Register new user.
+
++ Request (application/json)
+
+    + Attributes
+        + Payload (RegisterNewUserPayload)
+        + Headers (JsonHeaders)
+    + Body
+
+            {
+                "username": "nexchange_user",
+                "email": "user@email.address",
+                "phone": "+37060777777",
+                "password": "your_desired_password"
+            }
+
++ Response 201 (application/json)
+    + Attributes (MinimalRegisterNewUser)
+
+    + Body
+
+            {
+                "username": "nexchange_user",
+                "email": "user@email.address",
+                "phone": "+37060777777"
+            }
+
+## Reset Password [/en/api/v1/password_reset/]
+
+### Reset User Password [POST]
+   Reset user password.
+
++ Request (application/json)
+
+    + Attributes
+        + Payload (ResetUserPasswordPayload)
+        + Headers (JsonHeaders)
+    + Body
+
+            {
+                "email": "user@email.address"
+            }
+
++ Response 200 (application/json)
+    + Attributes (PasswordResetRequestResult)
+
+    + Body
+
+            {
+                "result": Please check your E-mail"
+            }
+
+## Complete Password Reset [/en/api/v1/password_reset_complete/]
+
+### Complete Password Reset [POST]
+   Complete password reset.
+
++ Request (application/json)
+
+    + Attributes
+        + Payload (PasswordResetCompletePayload)
+        + Headers (JsonHeaders)
+    + Body
+
+            {
+                "hash": "784adc9f3d34c29e346c1a207bd11b585875f20a",
+                "password": "New User Password"
+            }
+
++ Response 200 (application/json)
+    + Attributes (PasswordResetCompleteResult)
+
+    + Body
+
+            {
+                "result": password reset successful"
+            }
+
+# Data Structures
+
+## Profile
++ `partial_phone` (required) - partial phone of the profile.
++ `last_visit_time` (optional) - time of last visit (ISO 8601).
++ `id` (required) - profile ID.
++ `time_zone` - time zone of the profile.
++ `created_on` (required) - time of profile creation (ISO 8601).
++ `modified_on` (optional) - latest time on which this profile was updated (ISO 8601).
+
+## ReferralCode
++ `code`: unique referral code
++ `created_on` (required) - time of code creation (ISO 8601).
++ `modified_on` (optional) - latest time on which this code was updated (ISO 8601).
+
+## Referee
++ `profile` (Profile)
+
+## Referrals (array[Referral])
+
+## OrderReference
++ `unique_reference` (required) - unique ID of an order.
+
+## Referral
++ `confirmed_orders_count` (number, nullable) - COMPLETED by referee orders count.
++ `orders` (array[OrderReference]) - confirmed orders.
++ `turnover` (number, nullable) - sum of COMPLETED orders amount_base in BTC(bitcoin).
++ `revenue` (number, nullable) - revenue of the referral in BTC(bitcoin).
++ `referee` (Referee)
++ `code` (ReferralCode)
++ `created_on` (required) - time of referral creation (ISO 8601).
++ `modified_on` (optional) - latest time on which this referral was updated (ISO 8601).
+
+## Currency
++ `code` (required) - currency code.
++ `name` - currency name.
++ `min_confirmations` (number) - minimum number of confirmations required to approve a transaction on this currency's blockchain. Only relevant for currencies that have 'is_crypto' = true
++ `is_crypto` (boolean) - if true, this is a crypto currency, else it is a fiat currency.
++ `minimal_amount` -  minimal amount allowed on this currency transaction.
++ `is_base_of_enabled_pair` (boolean) - true if where is pair with this currency as base.
++ `is_quote_of_enabled_pair` (boolean) - true if exists a pair with this currency as quote.
++ `has_enabled_pairs` (boolean) -  true if pair with this currency as base or quote and enabled exchange exists.
+
+## PairMinimal
++ `base` (required) - base currency code.
++ `quote` (required) - quote currency code.
+
+## PairSimple
++ `name` (required) - name of the pair. i.e. BTCLTC for base BTC(bitcoin) and quote LTC(litecoin) pair.
++ `base` (required) - base currency code.
++ `quote` (required) - quote currency code.
++ `fee_ask` (required) - asking fee, 0.001 equals 0.1%.
++ `fee_bid` (required) - biding fee, 0.001 equals 0.1% (depreciated).
+
+## Pair
++ `name` (required) - name of the pair. i.e. BTCLTC for base BTC(bitcoin) and quote LTC(litecoin) pair.
++ `base` (Currency, required) - base currency.
++ `quote` (Currency, required) - quote currency.
++ `fee_ask` (number, required) - asking fee, 0.001 equals 0.1%.
++ `fee_bid` (number, required) - biding fee, 0.001 equals 0.1% (depreciated).
+
+## Ticker
++ `ask` (required) - ask price.
++ `bid` (required) - bid price.
+
+## Market
++ `name` (required) - market name.
++ `code` (required) - market code on n.exchange.
+
+## Price
++ `created_on` (required) - time of price creation (ISO 8601).
++ `unix_time` (required) - price creation unix timestamp.
++ `expiration_time_unix` (required) - price expration unix timestamp.
++ `ticker` (Ticker, required) - ticker.
++ `market` (Market, required) - market.
++ `rate` (string, required) - rate.
++ `rate_id` (string, required) - rate id unique value.
++ `allowed_historic_price_variance` (boolean, required) - is historic price variance allowed.
++ `allowed_historic_price_age` (boolean, required) - is historic price age allowed.
+
+## PriceRate
++ `rate` (number, required) - rate with which order amount was calculated.
++ `rate_usd` (number, required) - order base currency rate to USD.
++ `rate_btc` (number, required) - order base currency rate to BTC.
++ `rate_eur` (number, required) - order base currency rate to EUR.
+
+## PriceBaseQuote
++ `amount_base` (number, required) - amount of base currency which user gets.
++ `amount_quote` (number, required) - amount of quote currency which user sends.
++ `timestamp` (number, required) - UNIX timestamp.
++ `price` (number, required) - price (amount_quote / amount_base).
++ `pair` (PairMinimal, required) - pair.
++ `max_amount_base` (number, required) - maximum amount of base currency which user can get.
++ `max_amount_quote` (number, required) - maximum amount of quote currency which user can send.
++ `min_amount_base` (number, required) - minimum amount of base currency which user can get.
++ `min_amount_quote` (number, required) - minimum amount of quote currency which user can send.
+
+## Address
++ `type` (required) - "W" for withdraw and "D" for Deposit.
++ `name` (optional, nullable) - name of the address.
++ `address` (required) - crypto currency address i.e. 0x408a05c9F62E8eaECd258BB27213ee6e59d2E7Ef
++ `currency_code` (required) - currency code i.e. ETH.
+
+## WithdrawRefundAddressSet
++ `withdraw_address` (Address, optional) - address for withdrawal.
++ `refund_address` (Address, optional) - address for refund.
+
+## OrderFlaggedFieldPayload
++ `flagged` (boolean, optional) - set true if you want to restrict order processing, can't be flagged more than once.
+
+## Transaction
++ `created_on` (required) - time of transaction creation (ISO 8601).
++ `modified_on` (optional) - latest time on which this transaction was updated (ISO 8601).
++ `type` (required) - "W" for withdraw and "D" for Deposit.
++ `address_to` (number, required) - recipient address ID.
++ `tx_id` (nullable) - transaction ID.
++ `confirmations` (number, required) - transaction confirmations.
++ `amount` (required) - transaction amount.
++ `is_verified` (boolean, required) - verification status.
++ `is_completed` (boolean, required) - completion status.
++ `time` (nullable) - UTC time of transaction.
++ `currency` (nullable) - currency code.
+
+## SupportPayload
++ `name` (required) - name
++ `telephone` - telephone
++ `email` (required) - email
++ `subject`  - subject
++ `message` (required) - message
+
+## MinimalSupport
++ `unique_reference` (required) - unique ID of support request.
++ `created_on` (required) - when was the support inquiry made (ISO 8601)
++ `modified_on` (optional) - latest time on which this order was updated (ISO 8601).
++ `name` (required) - name
++ `telephone` - telephone
++ `email` (required) - email
++ `subject` (required) - subject
++ `message` (required) - message
++ `is_resolved` (boolean, required) - if the request is resolved
+
+## MinimalOrder
++ `amount_base` (required) - amount of base currency which user gets.
++ `is_default_rule` (boolean, required) - if True any incoming funds will be converted automatically (**To** the withdraw_address defined on the same order).
++ `unique_reference` (required) - unique ID of an order.
++ `amount_quote` (required) - amount of base currency which user sends.
++ `withdraw_address` (Address, nullable) - a destination address to which the funds will be dispatched upon the successful completion of the Order.
++ `transactions` (array[Transaction]) - order transactions.
+
+## MinimalLimitOrder
++ `amount_base` (required) - amount of base currency which user gets.
++ `unique_reference` (required) - unique ID of an order.
++ `amount_quote` (required) - amount of base currency which user sends.
++ `limit_rate` (required) - limit price of the order.
++ `withdraw_address` (Address, nullable) - a destination address to which the funds will be dispatched upon the successful completion of the Order.
++ `refund_address` (Address, required) - a destination address to which the funds will be dispatched upon the cancelation of the order.
++ `transactions` (array[Transaction]) - order transactions.
+
+## BaseOrder (MinimalOrder)
++ `created_on` (required) - time of order creation (ISO 8601).
++ `modified_on` (optional) - latest time on which this order was updated (ISO 8601).
++ `deposit_address` (Address, required) - the destination address to which the user is ought to deposit his fund in order for the trade to execute.
++ `from_default_rule` (boolean, required) - indicates that the order was created as a result of `is_default_rule` as described above.
++ `pair` (Pair, required) - exchanged pair.
++ `status_name` (array, required) - order status name.
+
+## DetailedOrder (BaseOrder)
++ `price` (PriceRate, required) - order price in different currencies.
++ `amount_usd` (number, required) - order amount in USD.
++ `amount_btc` (number, required) - order amount in BTC.
++ `amount_eur` (number, required) - order amount in EUR.
+
+## PrivateOrder (BaseOrder)
++ `status` (number, required) - order status 2 - Initial, 2 - Paid...
+
+## UpdateOrderResponse
++ `refund_address` (Address, optional) - a destination address to which the funds will be dispatched upon the successful refund of the Order.
++ `withdraw_address` (Address, optional) - a destination address to which the funds will be dispatched upon the successful release of the Order.
++ `flagged` (boolean, required) - an indication of an order if it is going to be processed or not. flagged: true - means that order is not going to be processed, you have to contact support.
+
+## Orders
++ `count` (number, required) - number of orders.
++ `next` (string, nullable) - link to the next page.
++ `previous` (string, nullable) - link to previous page.
++ `results` (array[BaseOrder])
+
+## Trade
++ `amount` (number, required) - amount of the trade of amount_currency.
++ `unique_reference` (required) - unique ID of related order.
++ `price` (number, required) - trade price.
++ `trade_type` (required) - BUY(user gets the amount) or SELL(user gives the amount).
++ `timestamp` (number, required) - UNIX timestamp of the trade.
++ `pair` (number, required) - pair of the trade (if trade type is SELL it is opposite reversed pair of the related order).
++ `amount_currency` (required) - currency of this trade amount.
+
+## Trades
++ `count` (number, required) - number of orders.
++ `next` (string, nullable) - link to the next page.
++ `previous` (string, nullable) - link to previous page.
++ `results` (array[Trade])
+
+## TotalVolume
++ `base_volume_btc` (number, required) - sum of all tradable pairs base volume in BTC(Bitcoin). Current rate is used.
++ `quote_volume_btc` (number, required) - sum of all tradable pairs quote volume in BTC(Bitcoin). Current rate is used.
+
+
+## TotalTickerVolume
++ `volume_btc` (number, required) - sum of all tradable pairs volume in BTC(Bitcoin). Current rate is used.
+
+
+## PairVolume
++ `pair` (PairMinimal, required) - tradable pair.
++ `base_volume` (number, required) - base volume.
++ `quote_volume` (number, required) - quote volume.
++ `base_volume_btc` (number, required) - base volume in BTC(Bitcoin). Current rate is used.
++ `quote_volume_btc` (number, required) - quote volume in BTC(Bitcoin). Current rate is used.
++ `last_ask` (number, required) - last ask price.
+
+
+## Volume
++ `hours` (number, required) - trade volume time. If hours=24 it means that response contains data of last 24h trade volumes.
++ `total_volume` (TotalVolume, required) - sum of all tradable pairs trade volume.
++ `tradable_pairs` (array[PairVolume])
+
+## TickerVolume
++ `hours` (number, required) - trade volume time. If hours=24 it means that response contains data of last 24h trade volumes.
++ `total_volume` (TotalTickerVolume, required) - sum of all tradable pairs trade volume.
++ `tradable_pairs` (array[PairVolume])
+
+## RequestOrderPayload
++ `amount_base` (number, optional) - amount of base currency which user gets.
++ `amount_quote` (number, optional) - amount of quote currency which user gives.
++ `is_default_rule` (boolean, required) - if True any incoming funds will be converted automatically (**To** the withdraw_address defined on the same order).
++ `pair` (Pair, required) - exchanged pair.
++ `withdraw_address` (Address, required) - a destination address to which the funds will be dispatched upon the successful completion of the Order. If you want to provide withdraw address later, provide 'withdraw_address': {}.
+
+## RequestLimitOrderPayload
++ `amount_base` (number, optional) - amount of base currency which user gets.
++ `amount_quote` (number, optional) - amount of quote currency which user gives.
++ `limit_rate` (number, optional) - limit price of the order.
++ `order_type` (number, optional) -  Buy (1) or Sell(0) base currency.
++ `pair` (Pair, required) - exchanged pair.
++ `withdraw_address` (Address, required) - a destination address to which the funds will be dispatched upon the successful completion of the Order.
++ `refund_address` (Address, required) - a destination address to which the funds will be dispatched upon the cancelation of the order.
+
+## UpdateOrderPayload
++ `refund_address` (Address, required) - a destination address to which the funds will be dispatched upon the successful refund of the Order.
+
+## JsonHeaders
++ `Content-Type` (required) - application/json.
++ `x-referral-token` (optional) - referral code.
+
+## OAuth2Headers
++ `Authorization` (required) - oAuth2 headers i.e. "Authorization:Bearer 3HrghbVeDUQWaOriqrXYLZmCb4cEXB".
++ `x-referral-token` (optional) - referral code.
+
+## OAuth2JsonHeaders (JsonHeaders)
++ `Authorization` (required) - oAuth2 headers i.e. "Authorization:Bearer 3HrghbVeDUQWaOriqrXYLZmCb4cEXB".
+
+## RegisterNewUserPayload
++ `username` (string, required) - your user username.
++ `email` (string, required) - your email address.
++ `phone` (string, optional) - your mobile phone number.
++ `password` (string, required) - desired password.
+
+## MinimalRegisterNewUser
++ `username` (string, required) - your user username.
++ `email` (string, required) - your email address.
++ `phone` (string, required) - your mobile phone number.
+
+## ResetUserPasswordPayload
++ `email` (string, required) - your email address.
+
+## PasswordResetRequestResult
++ `result` (string, required) - the result of password reset request.
+
+## PasswordResetCompletePayload
++ `hash` (required) - password reset hash sent to email.
++ `password` (string, required) - your new user password.
+
+## PasswordResetCompleteResult
++ `result` (string, required) - the result of password reset completion.
+
+## PairPriceInfo
++ `pair` (string, required) - pair name
++ `from` (string, required) - currency from
++ `to` (string, required) - currency to
++ `rate` (required) - base rate excluding payment method fees
++ `rate_id` (required) - rate id of latest price
++ `max_amount` (required) - maximal of currency "to" to buy
++ `min_amount` (required)  - minimal of currency "to" to buy
++ `max_receive_amount` (string, required) - maximal currency ("to") amount to receive
++ `min_receive_amount` (string, required)  - minimal currency ("to") amount to receive
++ `max_deposit_amount` (string, required) - maximal currency ("from") amount to deposit
++ `min_deposit_amount` (string, required)  - minimal currency ("from") amount to deposit

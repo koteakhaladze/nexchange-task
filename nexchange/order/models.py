@@ -4,7 +4,7 @@ class Pair(models.Model):
    name = models.CharField(max_length=32, null=False, blank=False)
 
 class Currency(models.Model):
-   name = models.CharField(max_length=32, null=False, blank=False)
+   code = models.CharField(max_length=32, null=False, blank=False)
 
 
 class Order(models.Model):

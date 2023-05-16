@@ -3,28 +3,28 @@
         "model": "order.Currency",
         "pk": "1",
         "fields": {
-          "name": "BTC"
+          "code": "BTC"
         }
     },
     {
         "model": "order.Currency",
         "pk": "2",
         "fields": {
-          "name": "USDT"
+          "code": "USDT"
         }
     },
     {
       "model": "order.Currency",
       "pk": "3",
       "fields": {
-        "name": "LTC"
+        "code": "LTC"
       }
     },
     {
       "model": "order.Currency",
       "pk": "4",
       "fields": {
-        "name": "ETH"
+        "code": "ETH"
       }
     },
     {
